@@ -3,10 +3,10 @@ class Platform{
     constructor(ctx,width, height){
         
         this.ctx = ctx
-        this.widthPlatform = 120
+        this.widthPlatform = 220
         this.heightPlatform = 25
-        this.positionX = width + 10
-        this.positionY = height  
+        this.positionX = width + 10;
+        this.positionY = height ;
     }
 
     draw(){

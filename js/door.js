@@ -1,5 +1,5 @@
 class Door{
-  constructor(ctx,w,h,imgPath, x = 330, y =20) {
+  constructor(ctx,w,h,imgPath, x = 120, y =39) {
       this.ctx = ctx;
       this.width = w;
       this.height = h ;

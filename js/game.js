@@ -21,9 +21,10 @@ const Game = {
     // Array vacio que almacenara las plataformas
     platforms: [],     
     diamonds: [], 
-    puddles: [], 
+    puddles: [],  //Array of puddles
     //
-    finaldoor: undefined, 
+    finaldoor: undefined,  
+    losegame: undefined,
     // Variable que almacenara el conjunto de teclas que utilizaremos en nuestro juego
     keys: {
         TOP: 38, 
@@ -45,8 +46,7 @@ const Game = {
         this.player = new Player(this.ctx, this.width, this.height, `watergirl.png` , 50, this.keys);
         // Llamamos a la variable background(undefined) y creamos una nuevo background(clase) y le asignamos los valores de nuestro background
         this.background = new Background(this.ctx, this.width, this.height, `newbackground.png`,);
-     
-       this.finaldoor = new Door(this.ctx, 90, 80,'waterdoor.JPG');
+       this.finaldoor = new Door(this.ctx, 90, 80,'waterdoor.JPG');   
         // Invocamos al metodo que crea las plataformas al iniciar el juego
         this.creatPlatforms();   
         // Invocamos al metodo que empieza nuestro juego
@@ -81,8 +81,9 @@ const Game = {
             this.checkPlayerCollision2(0, 5) 
             // mueve los elementos por el contexto del canvas
             this.checkDiamondCollision() 
-            this.checkDoorCollition();
-             this.moveAll()
+            this.checkDoorCollition(); 
+            this.checkPuddleCollition();
+            this.moveAll()
            // this.endGame()
          }, this.timeInterval);
         
@@ -149,19 +150,30 @@ checkDiamondCollision(){
         } 
       
     })
-},  
+},   
+ 
+checkPuddleCollition(){
+    return this.puddles.some((puddle)=>{
+        const rightBorderCol = this.player.position.x < puddle.position.x + puddle.width;
+        const leftBorderCol = this.player.position.x + this.player.width > puddle.position.x 
+        const topBorderCol = this.player.position.y + this.player.height > puddle.position.y 
+        const bottomBorderCol = this.player.position.y < puddle.position.y + puddle.height;
+
+        if(rightBorderCol&&leftBorderCol&&topBorderCol&&bottomBorderCol){
+           this.player.position.x = 50;
+        }
+    })
+},
 
 checkDoorCollition(){
     if(  this.player.position.x  < this.finaldoor.position.x  + this.finaldoor.width &&
         this.player.position.x + this.player.width > this.finaldoor.position.x &&
         this.player.position.y +  this.player.height > this.finaldoor.position.y &&
-        this.player.position.y < this.finaldoor.position.y + this.finaldoor.height){ 
-           
+        this.player.position.y < this.finaldoor.position.y + this.finaldoor.height){  
+          this.finaldoor =   new Win(this.ctx, this.width, this.height, `overgamebackground.png`); 
+  } 
 
-    }
-  
-
-},   
+ }, 
 
 
 
@@ -184,20 +196,27 @@ checkDoorCollition(){
     },
     // Metodo que te crea las plataformas y las introduce dentro de un array   
     creatPlatforms(){
-        for(let i = 0;i < 10;i++){
-            let desplazamiento = this.width/10
-            this.platforms.push(new Platform(this.ctx, desplazamiento*i,this.height - 65 * i)); 
+        for(let i = 0;i < 5;i++){
+            let desplazamiento = this.width/5
+            this.platforms.push(new Platform(this.ctx, desplazamiento*i,this.height - 90 * i)); 
             if(i%3==0) {
 
                 this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png',  desplazamiento*i,this.height - 90 * i ));
-            }
+            } 
+            if(i % 2 == 1){
+              this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i + 80,  this.height - 100 * i  ));  
+            }  
+            
         } 
         for(let i = 0; i < 10; i++){ 
             const desplazamiento = this.height/8;
-            this.platformhorizontal.push(new Platform(this.ctx, 220*i+90,desplazamiento*i)); 
+            this.platformhorizontal.push(new  Platform(this.ctx, 160*i+90,desplazamiento*i + 120)); 
           if(i%2==0||i%5==0) {
             this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png' , 220 * i + 90, desplazamiento * i -80));
-          }
+          } 
+          if(i % 5 == 0){
+            this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i - 50,  this.height - 103 * i  ));  
+        }
         }    
     }, 
      
@@ -214,8 +233,8 @@ checkDoorCollition(){
         this.drawPlatforms();    
     this.finaldoor.draw();    
         this.player.draw(); 
-        this.player.move() 
-        debugger
+        this.player.move()   
+        this.puddles.forEach(puddle => puddle.draw());         
         this.score.draw(this.diamondCounter); 
         this.diamonds.forEach(diamond => diamond.draw());
        

@@ -1,9 +1,9 @@
 class Player{
-  constructor(ctx,w,h,imgPath, x = 250, keys) {
+  constructor(ctx,w,h,imgPath, x = 50, keys) {
      
     this.ctx = ctx;
     this.canvasSize = {w : w, h: h}; 
-      this.width = 80;
+      this.width = 50;
       this.height = 120;
       this.imgPath = `img/${imgPath}`;
       this.position = {x: x, y: this.canvasSize.h - this.height - 20 }; 
@@ -67,8 +67,9 @@ setListerners(){
 }   
 
 jump() {
+  
     if (this.isOnPlatform || this.position.y >= this.posY0) {
-      this.position.y -= 40;
+      this.position.y -= 60;
       this.speedY -= 8;
     } 
   }
@@ -96,3 +97,6 @@ jump() {
 
 
 }
+
+
+const isMovingRight = false
