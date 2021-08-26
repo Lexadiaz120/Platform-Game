@@ -5,11 +5,11 @@ class Player{
     this.canvasSize = {w : w, h: h}; 
       this.width = 80;
       this.height = 120;
-      this.imgPath = `/img/${imgPath}`;
+      this.imgPath = `img/${imgPath}`;
       this.position = {x: x, y: this.canvasSize.h - this.height - 20 }; 
       this.posY0 = this.position.y 
       // If position of our player is equal to position of our player
-      this.speedY = 10
+      this.speedY = 3
       this.speedX = 1
       this.gravity = 0.4
       this.keys = keys
@@ -30,43 +30,44 @@ class Player{
       
   }
   move(){ // Preguntar  
-  
+    //console.log("gravity", this.posY0)
     if(this.position.y < this.posY0){
-    this.position.y += this.speedY
-    this.speedY += this.gravity
-   }else{
-   this.position.y = this.posY0
-    this.speedY = 1
+      this.position.y += this.speedY
+      this.speedY += this.gravity
+    }else{
+      this.position.y = this.posY0
+      this.speedY = 5
    }
 } 
 
 setListerners(){
     document.addEventListener("keydown", e => {
-
+      
         switch (e.keyCode) {
           // case this.keys.TOP:
           //   this.move();
           //   break;
           case this.keys.SPACE:
-          this.jump()  
-          
+            this.jump()  
             break;
           case this.keys.ArrowLeft:
-            this.moveLeft();
+            if(this.isOnPlatform || (Game.checkPlayerCollision2(-1) === false && Game.checkPlayerCollision(-1) === false)){
+              this.moveLeft();
+            }
             break;
           case this.keys.ArrowRight:
-            this.moveRight();
+            if(this.isOnPlatform || (Game.checkPlayerCollision2(1) === false && Game.checkPlayerCollision(1) === false)) {
+              this.moveRight();
+            }
             break;
         }
-
-        
       });
 
      
 }   
 
 jump() {
-    if (this.position.y >= this.posY0) {
+    if (this.isOnPlatform || this.position.y >= this.posY0) {
       this.position.y -= 40;
       this.speedY -= 8;
     } 
