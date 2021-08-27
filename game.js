@@ -71,6 +71,7 @@ const Game = {
     start(){
         // Intervalo de repeticion desues de un rango de tiempo
          setInterval(() => {
+
              // Refresca los elementos y parametros en el contexto del canvas
             this.clearAll()
             // Dibuja los elementos en el contexto del canvas
@@ -87,7 +88,6 @@ const Game = {
          }, this.timeInterval);
         
     }, 
-
     // Comprueba si el jugador ha colisionado y devuelve un true si alguna de las colisiones se ha cumplido
     checkPlayerCollision2(step){
     // Itera sobre el array mediante el metodo some buscando si alguna de las condiciones se cumple, si es asi devuelve true
@@ -166,7 +166,7 @@ checkDoorCollition(){
     isOnPlatform(platforms2){
         if(this.player.position.y + this.player.height > platforms2.positionY - 10 && this.player.position.y + this.player.height <  platforms2.positionY + platforms2.heightPlatform){
              this.player.posY0 = platforms2.positionY - this.player.height
-            this.player.speedY = 5
+            this.player.speedY = 3
             this.player.position.y = platforms2.positionY - this.player.height 
             this.player.isOnPlatform = true
     } 
@@ -209,10 +209,9 @@ checkDoorCollition(){
     drawAll(){
         this.background.draw();
         this.drawPlatforms();    
-    this.finaldoor.draw();    
+        this.finaldoor.draw();    
         this.player.draw(); 
         this.player.move() 
-        debugger
         this.score.draw(this.diamondCounter); 
         this.diamonds.forEach(diamond => diamond.draw());
        
