@@ -15,19 +15,5 @@ class Platform{
            
        }
 
-        // this.ctx.fillStyle = "yellow"
-        // this.ctx.fillRect(this.positionX,this.positionY,this.width,this.height)
-
-        // this.ctx.fillStyle = "yellow"
-        // this.ctx.fillRect(this.positionX -500 ,this.positionY,this.width,this.height)
-
-        // this.ctx.fillStyle = "yellow"
-        // this.ctx.fillRect(this.positionX -420 ,this.positionY,this.width,this.height)
-
-        // this.ctx.fillStyle = "yellow"
-        // this.ctx.fillRect(this.positionX -380 ,this.positionY,this.width,this.height)
-
-        // this.ctx.fillStyle = "yellow"
-        // this.ctx.fillRect(this.positionX -320 ,this.positionY,this.width,this.height)
-
+        
     }

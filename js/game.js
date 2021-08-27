@@ -15,7 +15,10 @@ const Game = {
     score: undefined,
     diamondCounter: 0,  
     // Intervalo de tiempo en el que se repite una accion
-    timeInterval: 20,  
+    timeInterval: 20, 
+    splash: new Audio('/music/splash.wav'), 
+    scoreDiamond: new Audio('/music/collect.wav'),
+    win: new Audio('/music/win.wav'),
     // Array vacio que almacenara las plataformas
     platformhorizontal: [],  
     // Array vacio que almacenara las plataformas
@@ -24,7 +27,8 @@ const Game = {
     puddles: [],  //Array of puddles
     //
     finaldoor: undefined,  
-    losegame: undefined,
+    losegame: undefined, 
+    music: undefined, 
     // Variable que almacenara el conjunto de teclas que utilizaremos en nuestro juego
     keys: {
         TOP: 38, 
@@ -147,6 +151,7 @@ checkDiamondCollision(){
             this.diamonds.splice(idx,1);
            // console.log("is collision !!");
             this.diamondCounter ++
+            this.scoreDiamond.play()
         } 
       
     })
@@ -154,13 +159,15 @@ checkDiamondCollision(){
  
 checkPuddleCollition(){
     return this.puddles.some((puddle)=>{
-        const rightBorderCol = this.player.position.x < puddle.position.x + puddle.width;
-        const leftBorderCol = this.player.position.x + this.player.width > puddle.position.x 
-        const topBorderCol = this.player.position.y + this.player.height > puddle.position.y 
-        const bottomBorderCol = this.player.position.y < puddle.position.y + puddle.height;
+        const rightBorderCol = this.player.position.x < puddle.position.x + puddle.width - 40;
+        const leftBorderCol = this.player.position.x + this.player.width - 40 > puddle.position.x 
+        const topBorderCol = this.player.position.y + this.player.height   > puddle.position.y 
+        const bottomBorderCol = this.player.position.y < puddle.position.y + puddle.height - 50;
 
         if(rightBorderCol&&leftBorderCol&&topBorderCol&&bottomBorderCol){
            this.player.position.x = 50;
+           this.splash.play()
+           this.splash.volume = 0.4
         }
     })
 },
@@ -170,7 +177,8 @@ checkDoorCollition(){
         this.player.position.x + this.player.width > this.finaldoor.position.x &&
         this.player.position.y +  this.player.height > this.finaldoor.position.y &&
         this.player.position.y < this.finaldoor.position.y + this.finaldoor.height){  
-          this.finaldoor =   new Win(this.ctx, this.width, this.height, `overgamebackground.png`); 
+          this.finaldoor =   new Win(this.ctx, this.width, this.height, `overgamebackground.png`);
+          this.win.play() 
   } 
 
  }, 
@@ -181,7 +189,7 @@ checkDoorCollition(){
     isOnPlatform(platforms2){
         if(this.player.position.y + this.player.height > platforms2.positionY - 10 && this.player.position.y + this.player.height <  platforms2.positionY + platforms2.heightPlatform){
              this.player.posY0 = platforms2.positionY - this.player.height
-            this.player.speedY = 5
+            this.player.speedY = 3
             this.player.position.y = platforms2.positionY - this.player.height 
             this.player.isOnPlatform = true
     } 
@@ -204,7 +212,7 @@ checkDoorCollition(){
                 this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png',  desplazamiento*i,this.height - 90 * i ));
             } 
             if(i % 2 == 1){
-              this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i + 80,  this.height - 100 * i  ));  
+              this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i + 80,  (this.height - 90 * i)-10  ));  
             }  
             
         } 
@@ -215,7 +223,7 @@ checkDoorCollition(){
             this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png' , 220 * i + 90, desplazamiento * i -80));
           } 
           if(i % 5 == 0){
-            this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i - 50,  this.height - 103 * i  ));  
+            this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i - 50,  (this.height - 100 * i)   ));  
         }
         }    
     }, 

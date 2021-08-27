@@ -4,7 +4,7 @@ class Player{
     this.ctx = ctx;
     this.canvasSize = {w : w, h: h}; 
       this.width = 50;
-      this.height = 120;
+      this.height = 100;
       this.imgPath = `img/${imgPath}`;
       this.position = {x: x, y: this.canvasSize.h - this.height - 20 }; 
       this.posY0 = this.position.y 
@@ -13,6 +13,7 @@ class Player{
       this.speedX = 1
       this.gravity = 0.4
       this.keys = keys
+      this.isJumping = false
       this.setListerners();
       // No forget  
       
@@ -36,19 +37,25 @@ class Player{
       this.speedY += this.gravity
     }else{
       this.position.y = this.posY0
-      this.speedY = 5
+      this.speedY = 3
    }
 } 
+
+checkJump() {
+  if(this.speedY === 3) {
+    this.isJumping = false
+  } else {
+    this.isJumping = true
+  } 
+}
 
 setListerners(){
     document.addEventListener("keydown", e => {
       
         switch (e.keyCode) {
-          // case this.keys.TOP:
-          //   this.move();
-          //   break;
           case this.keys.SPACE:
             this.jump()  
+            
             break;
           case this.keys.ArrowLeft:
             if(this.isOnPlatform || (Game.checkPlayerCollision2(-1) === false && Game.checkPlayerCollision(-1) === false)){
@@ -63,22 +70,27 @@ setListerners(){
         }
       });
 
-     
+      document.addEventListener("keyup", e => {
+      
+        switch (e.keyCode) {
+          case this.keys.SPACE:
+            this.jump()  
+            
+            break;
+        
+      }})
 }   
 
 jump() {
-  
     if (this.isOnPlatform || this.position.y >= this.posY0) {
-      this.position.y -= 60;
-      this.speedY -= 8;
+      this.position.y -= 10;
+      this.speedY -= 7;
     } 
   }
   moveRight(){
    if(this.position.x <= this.canvasSize.w - 20){
-
-     this.speedX += 5
-     this.position.x += 10
-     
+     this.speedX += 6
+     this.position.x += 30  
    }else{
     this.position.x = 10
    }
