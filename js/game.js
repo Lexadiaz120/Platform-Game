@@ -19,9 +19,9 @@ const Game = {
     timeInterval: 24,
     intervalId: undefined,
     timeCounter: 60, 
-    splash: new Audio('/music/splash.wav'), 
-    scoreDiamond: new Audio('/music/collect.wav'),
-    win: new Audio('/music/win.wav'),
+    splash: new Audio('music/splash.wav'), 
+    scoreDiamond: new Audio('music/collect.wav'),
+    win: new Audio('music/win.wav'),
     // Array vacio que almacenara las plataformas
     platformhorizontal: [],  
     // Array vacio que almacenara las plataformas
