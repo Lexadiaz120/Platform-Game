@@ -13,12 +13,15 @@ const Game = {
     // Variable que define cual va a ser nuestro jugador y sus caracteristicas
     player: undefined, 
     score: undefined,
+    time: undefined,
     diamondCounter: 0,  
     // Intervalo de tiempo en el que se repite una accion
-    timeInterval: 20, 
-    splash: new Audio('music/splash.wav'), 
-    scoreDiamond: new Audio('music/collect.wav'),
-    win: new Audio('music/win.wav'),
+    timeInterval: 24,
+    intervalId: undefined,
+    timeCounter: 60, 
+    splash: new Audio('/music/splash.wav'), 
+    scoreDiamond: new Audio('/music/collect.wav'),
+    win: new Audio('/music/win.wav'),
     // Array vacio que almacenara las plataformas
     platformhorizontal: [],  
     // Array vacio que almacenara las plataformas
@@ -26,7 +29,9 @@ const Game = {
     diamonds: [], 
     puddles: [],  //Array of puddles
     //
-    finaldoor: undefined,  
+    finaldoor: undefined, 
+    finaldoor2: undefined,
+    framesCounter: 0, 
     losegame: undefined, 
     music: undefined, 
     // Variable que almacenara el conjunto de teclas que utilizaremos en nuestro juego
@@ -36,6 +41,9 @@ const Game = {
         ArrowLeft: 37, 
         ArrowRight: 39
     },
+
+    
+    
     
     // Metodo que incializa nuestro juego con los parametros y elementos definidos     
     init(id) {
@@ -46,6 +54,7 @@ const Game = {
         // Invocacion el metodo que fija las dimensiones de nuestro juego
         this.setDimensions();
         this.score = new ScoreText(this.ctx,this.width/3,200);
+        this.time = new TimeText(this.ctx,this.width/3 + 200,400);
         // Llamamos a la variable player(undefined) y creamos una nuevo player(clase) y le asignamos los valores de nuestro jugador
         this.player = new Player(this.ctx, this.width, this.height, `watergirl.png` , 50, this.keys);
         // Llamamos a la variable background(undefined) y creamos una nuevo background(clase) y le asignamos los valores de nuestro background
@@ -74,8 +83,12 @@ const Game = {
     //Comienza nuestro juego
     start(){
         // Intervalo de repeticion desues de un rango de tiempo
-         setInterval(() => {
+        this.intervalId= setInterval(() => {
+            if(this.framesCounter > 5000) this.framesCounter = 0
+            this.framesCounter++
              // Refresca los elementos y parametros en el contexto del canvas
+             this.framesCounter % Math.floor(1000/this.timeInterval) == 0 ? this.endGame() : null
+
             this.clearAll()
             // Dibuja los elementos en el contexto del canvas
             this.drawAll() 
@@ -88,10 +101,17 @@ const Game = {
             this.checkDoorCollition(); 
             this.checkPuddleCollition();
             this.moveAll()
-           // this.endGame()
+        
          }, this.timeInterval);
         
     }, 
+    endGame(){
+        this.timeCounter --
+        if(this.timeCounter == 0){
+            clearInterval(this.intervalId)
+            this.finaldoor2 =   new Win(this.ctx, this.width, this.height, `you-lose.jpg`);
+        }
+    },
 
     // Comprueba si el jugador ha colisionado y devuelve un true si alguna de las colisiones se ha cumplido
     checkPlayerCollision2(step){
@@ -178,7 +198,8 @@ checkDoorCollition(){
         this.player.position.y +  this.player.height > this.finaldoor.position.y &&
         this.player.position.y < this.finaldoor.position.y + this.finaldoor.height){  
           this.finaldoor =   new Win(this.ctx, this.width, this.height, `overgamebackground.png`);
-          this.win.play() 
+          this.win.play(); 
+          
   } 
 
  }, 
@@ -223,7 +244,7 @@ checkDoorCollition(){
             this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png' , 220 * i + 90, desplazamiento * i -80));
           } 
           if(i % 5 == 0){
-            this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i - 50,  (this.height - 100 * i)   ));  
+            this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i - 50,  (this.height - 90 * i) + 10  ));  
         }
         }    
     }, 
@@ -244,6 +265,7 @@ checkDoorCollition(){
         this.player.move()   
         this.puddles.forEach(puddle => puddle.draw());         
         this.score.draw(this.diamondCounter); 
+        this.time.draw(this.timeCounter)
         this.diamonds.forEach(diamond => diamond.draw());
        
       

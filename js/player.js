@@ -89,8 +89,8 @@ jump() {
   }
   moveRight(){
    if(this.position.x <= this.canvasSize.w - 20){
-     this.speedX += 6
-     this.position.x += 30  
+     this.speedX += 5
+     this.position.x += 10  
    }else{
     this.position.x = 10
    }
