@@ -23,7 +23,8 @@ const Game = {
     timeCounter: 60, 
     splash: new Audio('music/splash.wav'), 
     scoreDiamond: new Audio('music/collect.wav'),
-    win: new Audio('music/win.wav'),
+    win: new Audio('music/win.wav'), 
+    fail: new Audio('music/fail.wav'), 
     // Array vacio que almacenara las plataformas
     platformhorizontal: [],  
     // Array vacio que almacenara las plataformas
@@ -223,7 +224,8 @@ checkDoorCollition(){
         const topBorderCol = this.player.position.y + this.player.height   > skewer.position.y 
         const bottomBorderCol = this.player.position.y < skewer.position.y + skewer.height - 50;
         if(rightBorderCol&&leftBorderCol&&topBorderCol&&bottomBorderCol){
-          this.player.position.x = 50;
+          this.player.position.x = 50; 
+          this.fail.play();
         }  
 
         // Falta meter la musica para Skewers
