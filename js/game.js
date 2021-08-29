@@ -11,9 +11,11 @@ const Game = {
     // Variable que define cual va a ser el fondo y sus caracteristicas
     background: undefined, 
     // Variable que define cual va a ser nuestro jugador y sus caracteristicas
-    player: undefined, 
+    player: undefined,  
+    player2: undefined, 
     score: undefined,
-    time: undefined,
+    time: undefined, 
+    skewers: [], 
     diamondCounter: 0,  
     // Intervalo de tiempo en el que se repite una accion
     timeInterval: 24,
@@ -40,7 +42,14 @@ const Game = {
         SPACE: 32,
         ArrowLeft: 37, 
         ArrowRight: 39
-    },
+    }, 
+
+    keys2: {
+     RIGHT: 68, 
+     LEFT: 65, 
+     UP: 87, 
+     DOWN: 83
+    }, 
 
     
     
@@ -56,10 +65,10 @@ const Game = {
         this.score = new ScoreText(this.ctx,this.width/3,200);
         this.time = new TimeText(this.ctx,this.width/3 + 200,400);
         // Llamamos a la variable player(undefined) y creamos una nuevo player(clase) y le asignamos los valores de nuestro jugador
-        this.player = new Player(this.ctx, this.width, this.height, `watergirl.png` , 50, this.keys);
+        this.player = new Player(this.ctx, this.width, this.height, `watergirl.png` , 50, this.keys); 
         // Llamamos a la variable background(undefined) y creamos una nuevo background(clase) y le asignamos los valores de nuestro background
         this.background = new Background(this.ctx, this.width, this.height, `newbackground.png`,);
-       this.finaldoor = new Door(this.ctx, 90, 80,'waterdoor.JPG');   
+       this.finaldoor = new Door(this.ctx, 90, 80,'waterdoor.JPG');         
         // Invocamos al metodo que crea las plataformas al iniciar el juego
         this.creatPlatforms();   
         // Invocamos al metodo que empieza nuestro juego
@@ -100,7 +109,8 @@ const Game = {
             this.checkDiamondCollision() 
             this.checkDoorCollition(); 
             this.checkPuddleCollition();
-            this.moveAll()
+            this.moveAll() 
+            this.checkSkewersCollition();
         
          }, this.timeInterval);
         
@@ -108,8 +118,7 @@ const Game = {
     endGame(){
         this.timeCounter --
         if(this.timeCounter == 0){
-            clearInterval(this.intervalId)
-            this.finaldoor2 =   new Win(this.ctx, this.width, this.height, `you-lose.jpg`);
+            clearInterval(this.intervalId);
         }
     },
 
@@ -198,11 +207,28 @@ checkDoorCollition(){
         this.player.position.y +  this.player.height > this.finaldoor.position.y &&
         this.player.position.y < this.finaldoor.position.y + this.finaldoor.height){  
           this.finaldoor =   new Win(this.ctx, this.width, this.height, `overgamebackground.png`);
-          this.win.play(); 
+          this.win.play();  
+          this.diamonds = []; 
+          this.puddles = []; 
+          this.player = new Player(this.ctx, 0, 0, 0 , 'watergirl.png');
           
   } 
 
- }, 
+ },  
+ 
+ checkSkewersCollition(){ 
+     return this.skewers.some((skewer) => {
+        const rightBorderCol = this.player.position.x < skewer.position.x + skewer.width - 40;
+        const leftBorderCol = this.player.position.x + this.player.width - 40 > skewer.position.x 
+        const topBorderCol = this.player.position.y + this.player.height   > skewer.position.y 
+        const bottomBorderCol = this.player.position.y < skewer.position.y + skewer.height - 50;
+        if(rightBorderCol&&leftBorderCol&&topBorderCol&&bottomBorderCol){
+          this.player.position.x = 50;
+        }  
+
+        // Falta meter la musica para Skewers
+     }) 
+ },
 
 
 
@@ -228,14 +254,23 @@ checkDoorCollition(){
         for(let i = 0;i < 5;i++){
             let desplazamiento = this.width/5
             this.platforms.push(new Platform(this.ctx, desplazamiento*i,this.height - 90 * i)); 
-            if(i%3==0) {
+            if(i%3==0) { 
+                //Pusheamos los diamantes
 
-                this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png',  desplazamiento*i,this.height - 90 * i ));
-            } 
-            if(i % 2 == 1){
-              this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i + 80,  (this.height - 90 * i)-10  ));  
+                this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png',  desplazamiento*i,this.height - 80 * i  ));
             }  
-            
+            // Pusheamos los charcos
+            if(i % 2 == 1){
+              this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i + 80,  (this.height - 100 * i)-10  ));  
+            }   
+             // Pusheamos los charcos
+            if(i % 4 == 2){
+                this.skewers.push(new Skewers(this.ctx, 120,40 , 'pinchos.png', desplazamiento * i + 120, (this.height - 90 * i) - 10));
+            }  
+            // Pusheamos los charcos
+            if(i % 6 == 4){
+                this.skewers.push(new Skewers(this.ctx, 120,40 , 'pinchos.png', desplazamiento * i + 120, (this.height - 90 * i) - 10));
+            }
         } 
         for(let i = 0; i < 10; i++){ 
             const desplazamiento = this.height/8;
@@ -243,12 +278,15 @@ checkDoorCollition(){
           if(i%2==0||i%5==0) {
             this.diamonds.push(new Diamond(this.ctx, 80, 40, 'diamond.png' , 220 * i + 90, desplazamiento * i -80));
           } 
-          if(i % 5 == 0){
-            this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i - 50,  (this.height - 90 * i) + 10  ));  
-        }
+          if(i % 5 == 0  && i !== 0){
+            this.puddles.push(new Puddles(this.ctx, 120, 40, 'Charcos.png', desplazamiento * i - 50,  (this.height - 90 * i) - 40  ));  
+        } 
+   
         }    
     }, 
-     
+      
+
+
  
 
     //Metodo que limpia todo el contexto del canvas
@@ -261,12 +299,14 @@ checkDoorCollition(){
         this.background.draw();
         this.drawPlatforms();    
     this.finaldoor.draw();    
-        this.player.draw(); 
-        this.player.move()   
+        this.player.draw();  
+        this.player.move(); 
+        this.skewers.forEach(skewer => skewer.draw());
         this.puddles.forEach(puddle => puddle.draw());         
         this.score.draw(this.diamondCounter); 
         this.time.draw(this.timeCounter)
-        this.diamonds.forEach(diamond => diamond.draw());
+        this.diamonds.forEach(diamond => diamond.draw()); 
+  
        
       
         
